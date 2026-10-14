@@ -1,0 +1,420 @@
+/*
+ * Project Pulse visual system
+ * Markup contract: see the class names grouped by component below.
+ */
+
+:root {
+  color-scheme: light;
+  --pulse-ink: #172033;
+  --pulse-muted: #526079;
+  --pulse-subtle: #71809a;
+  --pulse-canvas: #f4f7fb;
+  --pulse-surface: #ffffff;
+  --pulse-line: #d8e0ec;
+  --pulse-brand: #2457d6;
+  --pulse-brand-dark: #173d9d;
+  --pulse-focus: #f05a28;
+  --pulse-radius: 18px;
+  --pulse-shadow: 0 10px 28px rgb(23 32 51 / 10%);
+  --pulse-shadow-hover: 0 16px 34px rgb(23 32 51 / 16%);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  color: var(--pulse-ink);
+  background:
+    radial-gradient(circle at 88% -8%, #dbe8ff 0, transparent 30rem),
+    var(--pulse-canvas);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Page shell: use .dashboard-page when .dashboard is reserved for the grid. */
+.dashboard-page,
+main {
+  width: min(100% - 2rem, 76rem);
+  margin-inline: auto;
+  padding-block: clamp(1.5rem, 4vw, 4rem);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.dashboard-kicker {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--pulse-brand-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.dashboard-title,
+.dashboard-header h1 {
+  max-width: 16ch;
+  margin: 0;
+  color: #10182a;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+}
+
+.dashboard-intro {
+  max-width: 62ch;
+  margin: 0.75rem 0 0;
+  color: var(--pulse-muted);
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+}
+
+.dashboard-summary {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 3rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #cbd9f5;
+  border-radius: 999px;
+  color: #173d9d;
+  background: #edf3ff;
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+
+.dashboard-summary strong {
+  font-size: 1.15rem;
+}
+
+/*
+ * Card collection. This selector is intentionally required even when the
+ * page wrapper also uses .dashboard: it provides a resilient grid layout.
+ */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: stretch;
+}
+
+/* Project card */
+.project-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1.15rem, 2.4vw, 1.5rem);
+  overflow: hidden;
+  border: 1px solid var(--pulse-line);
+  border-radius: var(--pulse-radius);
+  background: var(--pulse-surface);
+  box-shadow: var(--pulse-shadow);
+}
+
+.project-card:hover {
+  border-color: #b9c9e7;
+  box-shadow: var(--pulse-shadow-hover);
+}
+
+.project-card__header,
+.project-card__heading,
+.project-card__meta {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.project-card__title {
+  min-width: 0;
+  margin: 0;
+  color: #10182a;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.project-card__summary {
+  margin: -0.25rem 0 0;
+  color: var(--pulse-muted);
+  overflow-wrap: anywhere;
+}
+
+.project-card__meta {
+  align-items: stretch;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e4eaf3;
+}
+
+.project-card__meta-item {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.project-card__meta-label,
+.project-card__activity-label {
+  color: var(--pulse-subtle);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.project-card__owner,
+.project-card__activity {
+  color: var(--pulse-ink);
+  font-size: 0.94rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.project-card__activity {
+  margin: auto 0 0;
+  padding-top: 0.1rem;
+}
+
+.project-card__activity-label {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+/* Status and priority: labels remain visible, while color and glyph add speed. */
+.status-badge,
+.priority-indicator {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  min-height: 1.9rem;
+  padding: 0.28rem 0.55rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.status-badge::before,
+.priority-indicator::before {
+  flex: 0 0 auto;
+  font-size: 0.9em;
+  line-height: 1;
+}
+
+.status-badge--active,
+.status-badge--on-track,
+[data-status="active"],
+[data-status="on-track"] {
+  color: #086c47;
+  background: #e7f7ee;
+}
+
+.status-badge--active::before,
+.status-badge--on-track::before {
+  content: "●";
+}
+
+.status-badge--planning,
+.status-badge--in-progress,
+[data-status="planning"],
+[data-status="in-progress"] {
+  color: #075d91;
+  background: #e7f4fc;
+}
+
+.status-badge--planning::before,
+.status-badge--in-progress::before {
+  content: "◐";
+}
+
+.status-badge--blocked,
+.status-badge--at-risk,
+[data-status="blocked"],
+[data-status="at-risk"] {
+  color: #a53a0b;
+  background: #fff0e8;
+}
+
+.status-badge--blocked::before,
+.status-badge--at-risk::before {
+  content: "!";
+}
+
+.status-badge--complete,
+.status-badge--completed,
+[data-status="complete"],
+[data-status="completed"] {
+  color: #4e4b7e;
+  background: #f0effa;
+}
+
+.status-badge--complete::before,
+.status-badge--completed::before {
+  content: "✓";
+}
+
+.priority-indicator--critical,
+.priority-indicator--high,
+[data-priority="critical"],
+[data-priority="high"] {
+  color: #a12837;
+  background: #ffebee;
+}
+
+.priority-indicator--critical::before,
+.priority-indicator--high::before {
+  content: "▲";
+}
+
+.priority-indicator--medium,
+[data-priority="medium"] {
+  color: #885a00;
+  background: #fff4cf;
+}
+
+.priority-indicator--medium::before {
+  content: "◆";
+}
+
+.priority-indicator--low,
+[data-priority="low"] {
+  color: #285d87;
+  background: #eaf4fb;
+}
+
+.priority-indicator--low::before {
+  content: "▽";
+}
+
+/* Loading, empty, and error messages can be a direct child of .dashboard. */
+.dashboard-state,
+.loading-state,
+.empty-state,
+.error-state {
+  grid-column: 1 / -1;
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  border: 1px dashed #aebbd0;
+  border-radius: var(--pulse-radius);
+  color: var(--pulse-muted);
+  background: rgb(255 255 255 / 78%);
+  text-align: center;
+}
+
+.dashboard-state h2,
+.loading-state h2,
+.empty-state h2,
+.error-state h2 {
+  margin: 0 0 0.4rem;
+  color: var(--pulse-ink);
+  font-size: 1.15rem;
+}
+
+.dashboard-state p,
+.loading-state p,
+.empty-state p,
+.error-state p {
+  max-width: 48ch;
+  margin: auto;
+}
+
+.error-state,
+.dashboard-state--error {
+  border-color: #d87872;
+  color: #8c241d;
+  background: #fff3f2;
+}
+
+a {
+  color: var(--pulse-brand);
+  font-weight: 700;
+}
+
+a:hover {
+  color: var(--pulse-brand-dark);
+}
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--pulse-focus);
+  outline-offset: 3px;
+}
+
+@media (max-width: 42rem) {
+  .dashboard-header {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .dashboard-summary {
+    justify-self: start;
+  }
+
+  .project-card__meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 28rem) {
+  .dashboard-page,
+  main {
+    width: min(100% - 1.25rem, 76rem);
+    padding-block: 1.25rem;
+  }
+
+  .project-card {
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
+  .project-card__header,
+  .project-card__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .status-badge,
+  .priority-indicator {
+    align-self: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .project-card {
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  }
+
+  .project-card:hover {
+    transform: translateY(-2px);
+  }
+}

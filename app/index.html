@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard-page">
+      <header class="dashboard-header">
+        <div>
+          <span class="dashboard-kicker">Contributor dashboard</span>
+          <h1 class="dashboard-title">Project Pulse</h1>
+          <p class="dashboard-intro">
+            Follow active contributor work, see where help is needed, and find the latest update.
+          </p>
+        </div>
+        <p class="dashboard-summary" aria-live="polite">
+          <strong id="project-count">—</strong>
+          <span id="project-count-label">projects loading</span>
+        </p>
+      </header>
+
+      <section aria-label="Projects">
+        <div id="project-dashboard" class="dashboard" aria-busy="true" aria-live="polite">
+          <section class="dashboard-state loading-state" aria-labelledby="loading-title">
+            <h2 id="loading-title">Loading projects</h2>
+            <p>Retrieving the latest contributor project updates.</p>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        "use strict";
+
+        const requiredFields = ["name", "owner", "status", "recentActivity", "priority"];
+        const allowedStatuses = new Set([
+          "active",
+          "on-track",
+          "planning",
+          "in-progress",
+          "blocked",
+          "at-risk",
+          "complete",
+          "completed"
+        ]);
+        const allowedPriorities = new Set(["critical", "high", "medium", "low"]);
+        const dashboard = document.getElementById("project-dashboard");
+        const projectCount = document.getElementById("project-count");
+        const projectCountLabel = document.getElementById("project-count-label");
+
+        function setCount(count) {
+          projectCount.textContent = String(count);
+          projectCountLabel.textContent = count === 1 ? "project" : "projects";
+        }
+
+        function createTextElement(tagName, className, text) {
+          const element = document.createElement(tagName);
+          element.className = className;
+          element.textContent = text;
+          return element;
+        }
+
+        function displayState(type, title, message) {
+          dashboard.replaceChildren();
+          dashboard.setAttribute("aria-busy", "false");
+
+          const state = document.createElement("section");
+          state.className = `dashboard-state ${type}-state`;
+          if (type === "error") {
+            state.classList.add("dashboard-state--error");
+          }
+
+          const heading = document.createElement("h2");
+          heading.textContent = title;
+          const detail = document.createElement("p");
+          detail.textContent = message;
+          state.append(heading, detail);
+          dashboard.append(state);
+          setCount(0);
+        }
+
+        function validateProjects(payload) {
+          if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+            throw new Error("The data must be an object containing a projects array.");
+          }
+          if (!Array.isArray(payload.projects)) {
+            throw new Error("The data is missing a projects array.");
+          }
+
+          payload.projects.forEach((project, index) => {
+            if (!project || typeof project !== "object" || Array.isArray(project)) {
+              throw new Error(`Project ${index + 1} is not a project object.`);
+            }
+            for (const field of requiredFields) {
+              if (typeof project[field] !== "string" || project[field].trim() === "") {
+                throw new Error(`Project ${index + 1} has an invalid ${field} value.`);
+              }
+            }
+            if (!allowedStatuses.has(project.status)) {
+              throw new Error(`Project ${index + 1} has an unsupported status value.`);
+            }
+            if (!allowedPriorities.has(project.priority)) {
+              throw new Error(`Project ${index + 1} has an unsupported priority value.`);
+            }
+            if ("summary" in project && typeof project.summary !== "string") {
+              throw new Error(`Project ${index + 1} has an invalid summary value.`);
+            }
+          });
+
+          return payload.projects;
+        }
+
+        function createProjectCard(project) {
+          const card = document.createElement("article");
+          card.className = "project-card";
+
+          const header = document.createElement("header");
+          header.className = "project-card__header";
+          const heading = document.createElement("div");
+          heading.className = "project-card__heading";
+          heading.append(createTextElement("h2", "project-card__title", project.name));
+
+          const priority = createTextElement(
+            "span",
+            `priority-indicator priority-indicator--${project.priority}`,
+            `Priority: ${project.priority}`
+          );
+          priority.dataset.priority = project.priority;
+          header.append(heading, priority);
+
+          const summary = createTextElement(
+            "p",
+            "project-card__summary",
+            project.summary || "No project summary is available yet."
+          );
+
+          const metadata = document.createElement("div");
+          metadata.className = "project-card__meta";
+          const owner = document.createElement("div");
+          owner.className = "project-card__meta-item";
+          owner.append(
+            createTextElement("span", "project-card__meta-label", "Owner"),
+            createTextElement("span", "project-card__owner", project.owner)
+          );
+          const status = document.createElement("div");
+          status.className = "project-card__meta-item";
+          const badge = createTextElement(
+            "span",
+            `status-badge status-badge--${project.status}`,
+            `Status: ${project.status}`
+          );
+          badge.dataset.status = project.status;
+          status.append(createTextElement("span", "project-card__meta-label", "Status"), badge);
+          metadata.append(owner, status);
+
+          const activity = document.createElement("p");
+          activity.className = "project-card__activity";
+          activity.append(
+            createTextElement("span", "project-card__activity-label", "Recent activity"),
+            document.createTextNode(project.recentActivity)
+          );
+
+          card.append(header, summary, metadata, activity);
+          return card;
+        }
+
+        async function loadProjects() {
+          try {
+            const response = await fetch("project-data.json");
+            if (!response.ok) {
+              throw new Error(`The project data request returned HTTP ${response.status}.`);
+            }
+
+            let payload;
+            try {
+              payload = await response.json();
+            } catch {
+              throw new Error("The project data could not be read as valid JSON.");
+            }
+
+            const projects = validateProjects(payload);
+            if (projects.length === 0) {
+              displayState("empty", "No projects yet", "Check back soon for contributor project updates.");
+              return;
+            }
+
+            const cards = projects.map(createProjectCard);
+            dashboard.replaceChildren(...cards);
+            dashboard.setAttribute("aria-busy", "false");
+            setCount(projects.length);
+          } catch (error) {
+            console.error("Unable to load Project Pulse data:", error);
+            displayState(
+              "error",
+              "Projects are unavailable",
+              "We could not load project updates. Please refresh the page or try again later."
+            );
+          }
+        }
+
+        loadProjects();
+      })();
+    </script>
+  </body>
+</html>

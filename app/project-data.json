@@ -1,0 +1,44 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Onboarding Refresh",
+      "owner": "Maya Chen",
+      "status": "on-track",
+      "recentActivity": "Drafted the first-run checklist and scheduled usability review for Thursday.",
+      "priority": "high",
+      "summary": "Make the first contribution path clearer for new community members."
+    },
+    {
+      "name": "Accessibility Audit Follow-up",
+      "owner": "Jordan Patel",
+      "status": "in-progress",
+      "recentActivity": "Resolved keyboard navigation findings in the account settings flow.",
+      "priority": "critical",
+      "summary": "Close the highest-impact accessibility findings from the spring audit."
+    },
+    {
+      "name": "Release Notes Automation",
+      "owner": "Elena Rodriguez",
+      "status": "planning",
+      "recentActivity": "Confirmed the changelog data source and documented the proposed workflow.",
+      "priority": "medium",
+      "summary": "Reduce manual release-note preparation while retaining editorial review."
+    },
+    {
+      "name": "Community Metrics Dashboard",
+      "owner": "Noah Williams",
+      "status": "at-risk",
+      "recentActivity": "Waiting on the final privacy review for the aggregate retention metric.",
+      "priority": "high",
+      "summary": "Give maintainers a privacy-conscious view of community health trends."
+    },
+    {
+      "name": "Documentation Link Repair",
+      "owner": "Priya Shah",
+      "status": "completed",
+      "recentActivity": "Merged the final batch of repaired links and added a weekly link check.",
+      "priority": "low",
+      "summary": "Keep contributor documentation dependable and easy to navigate."
+    }
+  ]
+}
